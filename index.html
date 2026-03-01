@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TripSense Stable OS</title>
+    <style>
+        :root {
+            --primary: #0071e3;
+            --bg: #000;
+            --glass: rgba(30, 30, 32, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --text-dim: #8e8e93;
+            --danger: #ff453a;
+            --success: #32d74b;
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: -apple-system, system-ui, sans-serif; 
+            line-height: 1.4;
+            padding-bottom: 90px;
+        }
+
+        /* --- NAVIGATION LOGIC --- */
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- REUSABLE COMPONENTS --- */
+        .card { 
+            background: var(--glass); 
+            border: 1px solid var(--border); 
+            border-radius: 20px; 
+            padding: 20px; 
+            margin-bottom: 15px; 
+            backdrop-filter: blur(15px);
+        }
+        .tag { color: var(--primary); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+        h1 { font-size: 32px; font-weight: 700; margin: 10px 0 20px; letter-spacing: -1px; }
+
+        /* --- SAFETY RADAR (Izhan's Tech) --- */
+        .radar {
+            height: 160px; background: #111; border-radius: 18px; 
+            position: relative; overflow: hidden; display: flex; 
+            align-items: center; justify-content: center; border: 1px solid var(--border);
+        }
+        .sweep { 
+            position: absolute; width: 200%; height: 200%; 
+            background: conic-gradient(from 0deg, rgba(50, 215, 75, 0.2), transparent 90deg); 
+            animation: rotate 4s linear infinite; 
+        }
+        .dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 15px var(--success); z-index: 2; }
+
+        /* --- THREAT MAP (Daniel's Intel) --- */
+        .map-mini { height: 120px; background: #1c1c1e; border-radius: 12px; margin-top: 10px; position: relative; overflow: hidden; }
+        .hotspot { position: absolute; width: 30px; height: 30px; background: rgba(255, 69, 58, 0.4); border-radius: 50%; filter: blur(6px); animation: pulse 2s infinite; }
+
+        /* --- BUTTONS --- */
+        .btn { 
+            background: #fff; color: #000; border: none; padding: 15px; 
+            width: 100%; border-radius: 12px; font-weight: 600; cursor: pointer;
+            margin-top: 10px; font-size: 16px;
+        }
+        .btn-sos { background: var(--danger); color: #fff; }
+
+        /* --- TAB BAR --- */
+        .tab-bar { 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 80px; 
+            background: rgba(20, 20, 20, 0.95); border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 999;
+        }
+        .tab { background: none; border: none; color: var(--text-dim); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+        .tab.active { color: var(--primary); }
+        .tab-icon { font-size: 20px; }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.6); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="home" class="page active">
+        <p style="color:var(--text-dim); font-weight: 500;">TripSense Discovery</p>
+        <h1>Welcome.</h1>
+
+        <div class="card">
+            <span class="tag">Climate Engine</span>
+            <div style="font-size: 42px; font-weight: 800;" id="temp">21°C</div>
+            <p id="tip" style="color:var(--text-dim); font-size:14px;">Perfect weather for exploring.</p>
+            <button class="btn" onclick="sync()">Sync Weather</button>
+        </div>
+
+        <div class="card">
+            <span class="tag">Live Transit</span>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div><small style="color:var(--text-dim)">LRT Train</small><div style="font-size:20px; font-weight:700" id="train">--</div></div>
+                <div><small style="color:var(--text-dim)">Bus 101</small><div style="font-size:20px; font-weight:700" id="bus">--</div></div>
+                <div style="text-align:right;"><span style="color:var(--success)">●</span> <small>Luggage OK</small></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="booking" class="page">
+        <h1>Bookings</h1>
+        <div class="card" style="padding:10px;">
+            <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400" style="width:100%; border-radius:12px; height:150px; object-fit:cover;">
+            <div style="padding:10px;">
+                <span class="tag">Luxury Stay</span>
+                <p><strong>Uluwatu Villas, Bali</strong></p>
+                <button class="btn">Check Availability</button>
+            </div>
+        </div>
+        <div class="card">
+            <span class="tag">Member Benefit</span>
+            <p>Get <strong>20% Off</strong> attraction tickets today.</p>
+            <button class="btn" style="background:var(--primary); color:#fff;">Claim Tickets</button>
+        </div>
+    </div>
+
+    <div id="safety" class="page">
+        <h1>Safety HUD</h1>
+        <span class="tag">Luggage Radar (AirTag)</span>
+        <div class="radar">
+            <div class="sweep"></div>
+            <div class="dot"></div>
+            <p style="position:absolute; bottom:10px; font-size:10px; color:var(--success); font-weight:bold;">TRACKING ACTIVE: 2m</p>
+        </div>
+
+        <span class="tag" style="margin-top:20px;">Crime Intel Map</span>
+        <div class="card">
+            <p style="font-size:14px; color:var(--danger); font-weight:bold;">⚠ Pickpocket Hotspot</p>
+            <small style="color:var(--text-dim)">Activity detected near Central Market.</small>
+            <div class="map-mini">
+                <div class="hotspot" style="top:30%; left:50%;"></div>
+                <div class="hotspot" style="top:50%; left:20%;"></div>
+            </div>
+        </div>
+        <button class="btn btn-sos">EMERGENCY SOS</button>
+    </div>
+
+    <div id="team" class="page">
+        <h1>Architecture</h1>
+        <div class="card"><strong>Batrisyia (25)</strong><br><small>Lead Project Manager</small></div>
+        <div class="card"><strong>Ain (24)</strong><br><small>UI/UX Designer</small></div>
+        <div class="card"><strong>Izhan (25)</strong><br><small>App Developer</small></div>
+        <div class="card"><strong>Adriana (23)</strong><br><small>Marketing Promotion</small></div>
+        <div class="card"><strong>Mahirah (23)</strong><br><small>Documentation Lead</small></div>
+    </div>
+
+    <nav class="tab-bar">
+        <button class="tab active" onclick="nav('home', this)"><span class="tab-icon">◈</span>Home</button>
+        <button class="tab" onclick="nav('booking', this)"><span class="tab-icon">❖</span>Book</button>
+        <button class="tab" onclick="nav('safety', this)"><span class="tab-icon">⛨</span>Safety</button>
+        <button class="tab" onclick="nav('team', this)"><span class="tab-icon">◎</span>Team</button>
+    </nav>
+
+    <script>
+        // Solid Navigation Logic
+        function nav(pageId, el) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Remove active from tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            // Show target
+            document.getElementById(pageId).classList.add('active');
+            el.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // Feature Logic
+        function sync() {
+            const temps = ["21°C", "27°C", "23°C"];
+            const tips = ["Recommendation: Pack a light jacket.", "Recommendation: High UV. Wear sunblock.", "Recommendation: Breezy. Wear light layers."];
+            const i = Math.floor(Math.random() * 3);
+            document.getElementById('temp').innerText = temps[i];
+            document.getElementById('tip').innerText = tips[i];
+        }
+
+        function updateTransit() {
+            document.getElementById('train').innerText = Math.floor(Math.random() * 12 + 2) + "m";
+            document.getElementById('bus').innerText = Math.floor(Math.random() * 10 + 1) + "m";
+        }
+
+        // Start
+        updateTransit();
+        setInterval(updateTransit, 5000);
+    </script>
+</body>
+</html>
