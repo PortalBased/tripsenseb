@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>TripSense Mobile OS</title>
+    <style>
+        :root {
+            --primary: #0071e3;
+            --bg: #000;
+            --glass: rgba(28, 28, 30, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #fff;
+            --text-dim: #a1a1a6;
+            --danger: #ff453a;
+            --success: #32d74b;
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding-bottom: 100px; overflow-x: hidden; }
+
+        .view { display: none; padding: 20px; animation: viewIn 0.3s ease-out; }
+        .view.active { display: block; }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 20px; margin-bottom: 15px; backdrop-filter: blur(20px); position: relative; }
+        .tag { color: var(--primary); font-size: 11px; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        h1 { font-size: 32px; font-weight: 800; margin-bottom: 20px; letter-spacing: -1px; }
+
+        /* Discovery */
+        .passport-btn { background: linear-gradient(135deg, #333, #000); border: 1px solid var(--border); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: var(--glass); border: 1px solid var(--border); padding: 10px; border-radius: 12px; text-align: center; font-size: 12px; }
+
+        /* Logistics */
+        .radar-box { height: 160px; background: #111; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+        .sweep { position: absolute; width: 200%; height: 200%; background: conic-gradient(from 0deg, rgba(50, 215, 75, 0.15), transparent 90deg); animation: rotate 4s linear infinite; }
+        .dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 15px var(--success); z-index: 2; }
+        
+        .map-mini { height: 130px; background: #1c1c1e; border-radius: 15px; margin-top: 10px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+        .hotspot { position: absolute; width: 35px; height: 35px; background: rgba(255, 69, 58, 0.4); border-radius: 50%; filter: blur(8px); animation: pulse 2s infinite; }
+
+        /* Team */
+        .bio-card { margin-bottom: 12px; border-left: 3px solid var(--primary); padding-left: 15px; }
+
+        /* Tab Bar */
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: rgba(15,15,15,0.95); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: 15px; }
+        .tab { background: none; border: none; color: var(--text-dim); font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+        .tab.active { color: var(--primary); }
+        .tab-icon { font-size: 22px; }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.6); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="view-discovery" class="view active">
+        <div class="passport-btn">
+            <div style="font-size: 24px;">📇</div>
+            <div>
+                <div style="font-size: 14px; font-weight: 600;">Digital Passport</div>
+                <div style="font-size: 11px; color: var(--text-dim);">Verified Member ID</div>
+            </div>
+        </div>
+
+        <h1>Discovery</h1>
+
+        <div class="stats-row">
+            <div class="stat-box"><small style="color:var(--text-dim)">Local Time</small><div>09:23</div></div>
+            <div class="stat-box"><small style="color:var(--text-dim)">Currency</small><div>150 JPY</div></div>
+            <div class="stat-box"><small style="color:var(--text-dim)">Safety</small><div style="color:var(--success)">High</div></div>
+        </div>
+
+        <div class="card" style="background: linear-gradient(145deg, #1a1a1c, #000);">
+            <span class="tag">Climate Engine</span>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size: 42px; font-weight: 800;">21°C</div>
+                    <p style="font-size: 14px; color:var(--text-dim)">Partly Cloudy • Tokyo</p>
+                </div>
+                <div style="font-size: 40px;">☁️</div>
+            </div>
+            <p style="margin-top: 15px; font-size: 13px;"><strong>Packing Guide:</strong> Layers are recommended. A light trench coat is ideal for the evening breeze.</p>
+        </div>
+
+        <span class="tag">System Reviews</span>
+        <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;">
+            <div class="card" style="flex: 0 0 220px; padding:15px; font-size:12px;">"The 20% discount on tickets saved my budget in Kyoto!"<br><br><b style="color:var(--primary)">— Daniel L.</b></div>
+            <div class="card" style="flex: 0 0 220px; padding:15px; font-size:12px;">"SOS feature helped me find a clinic instantly when I was lost."<br><br><b style="color:var(--primary)">— Adriana M.</b></div>
+            <div class="card" style="flex: 0 0 220px; padding:15px; font-size:12px;">"Packing tips were spot on for the Tokyo weather."<br><br><b style="color:var(--primary)">— Aisyah R.</b></div>
+        </div>
+    </div>
+
+    <div id="view-transit" class="view">
+        <h1>Logistics</h1>
+        
+        <span class="tag">Asset Tracking</span>
+        <div class="radar-box">
+            <div class="sweep"></div>
+            <div class="dot"></div>
+            <div style="position:absolute; bottom:15px; font-size:11px; color:var(--success); font-weight:bold;">STATUS: LUGGAGE SECURED (2m)</div>
+        </div>
+
+        <div class="card" style="margin-top:15px; border-left: 4px solid var(--danger);">
+            <span class="tag" style="color:var(--danger)">Security Intelligence</span>
+            <strong>Active Threat Alert</strong>
+            <p style="font-size: 13px; color:var(--text-dim); margin-top:5px;">Pickpocket density high near Central Square. Secure all valuables.</p>
+            <div class="map-mini">
+                <div class="hotspot" style="top:30%; left:50%;"></div>
+                <div class="hotspot" style="top:55%; left:25%;"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="tag">Live Transit Feed</span>
+            <div style="display:flex; justify-content:space-between;">
+                <div><small>Bus 101</small><div style="font-size:18px; font-weight:700">04m</div></div>
+                <div><small>LRT Train</small><div style="font-size:18px; font-weight:700">12m</div></div>
+                <div style="text-align:right;"><span style="color:var(--success)">●</span><br><small>Connected</small></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-team" class="view">
+        <h1>Architecture</h1>
+        <p style="color:var(--text-dim); margin-bottom:20px; font-size:14px;">The architects of TripSense.</p>
+
+        <div class="card">
+            <div class="bio-card"><strong>Batrisyia (25)</strong><br><small>Lead Project Manager</small></div>
+            <p style="font-size:13px; color:var(--text-dim); margin-top:5px;">Responsible for end-to-end logistics and ensuring the project mission is met on time.</p>
+        </div>
+        <div class="card">
+            <div class="bio-card"><strong>Ain (24)</strong><br><small>UI/UX & Visual Lead</small></div>
+            <p style="font-size:13px; color:var(--text-dim); margin-top:5px;">Designer of the premium interface and mobile-first experience.</p>
+        </div>
+        <div class="card">
+            <div class="bio-card"><strong>Izhan (25)</strong><br><small>App Developer</small></div>
+            <p style="font-size:13px; color:var(--text-dim); margin-top:5px;">Engineering of core radar logic and real-time API integrations.</p>
+        </div>
+        <div class="card">
+            <div class="bio-card"><strong>Adriana (23)</strong><br><small>Marketing & Growth</small></div>
+            <p style="font-size:13px; color:var(--text-dim); margin-top:5px;">Strategist for global expansion and membership benefit systems.</p>
+        </div>
+        <div class="card">
+            <div class="bio-card"><strong>Mahirah (23)</strong><br><small>Documentation Lead</small></div>
+            <p style="font-size:13px; color:var(--text-dim); margin-top:5px;">Management of system logs, technical guides, and project transparency.</p>
+        </div>
+    </div>
+
+    <nav class="tab-bar">
+        <button class="tab active" onclick="switchTab('discovery', this)"><span class="tab-icon">◈</span>Discovery</button>
+        <button class="tab" onclick="switchTab('transit', this)"><span class="tab-icon">❖</span>Logistics</button>
+        <button class="tab" onclick="switchTab('team', this)"><span class="tab-icon">◎</span>Team</button>
+    </nav>
+
+    <script>
+        function switchTab(viewId, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            el.classList.add('active');
+            window.scrollTo(0,0);
+        }
+    </script>
+
+</body>
+</html>
